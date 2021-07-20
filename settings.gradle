@@ -1,2 +1,3 @@
 rootProject.name = "EasyStorage"
 include ':app'
+include ':EasyStorage'
