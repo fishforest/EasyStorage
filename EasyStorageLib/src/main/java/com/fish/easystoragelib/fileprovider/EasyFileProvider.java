@@ -1,4 +1,4 @@
-package com.fish.easystorage.fileprovider;
+package com.fish.easystoragelib.fileprovider;
 
 import android.content.Context;
 import android.content.Intent;

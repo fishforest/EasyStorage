@@ -7,10 +7,15 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.fish.easystoragelib.fileprovider.EasyFileProvider;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,13 +40,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.btn_sd_text).setOnClickListener((v) -> {
-
+            viewFile(sdTextPath);
         });
         findViewById(R.id.btn_sd_pic).setOnClickListener((v) -> {
-
         });
         findViewById(R.id.btn_inner_text).setOnClickListener((v) -> {
-
+            viewFile(innerTextPath);
         });
         findViewById(R.id.btn_inner_pic).setOnClickListener((v) -> {
 
@@ -54,6 +58,21 @@ public class MainActivity extends AppCompatActivity {
             //写入
             testPermission(MainActivity.this);
         }).start();
+    }
+
+    private void viewFile(String filePath) {
+        if (TextUtils.isEmpty(filePath))
+            return;
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        EasyFileProvider.fillIntent(this, new File(filePath), intent, true);
+
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.d("tag", "error:" + e.getLocalizedMessage());
+        }
     }
 
     //检查权限，并返回需要申请的权限列表
@@ -103,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void writeFile() {
         writeFile(innerTextPath);
-        writeFile(innerTextImg);
+//        writeFile(innerTextImg);
         writeFile(sdTextPath);
     }
 
