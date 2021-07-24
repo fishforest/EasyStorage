@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -31,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String sdTextPath;
     private String innerTextPath;
-    private String sdTextImg;
-    private String innerTextImg;
+    private String sdImgPath;
+    private String innerImgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +45,20 @@ public class MainActivity extends AppCompatActivity {
             viewFile(sdTextPath);
         });
         findViewById(R.id.btn_sd_pic).setOnClickListener((v) -> {
+            viewFile(sdImgPath);
         });
         findViewById(R.id.btn_inner_text).setOnClickListener((v) -> {
             viewFile(innerTextPath);
         });
         findViewById(R.id.btn_inner_pic).setOnClickListener((v) -> {
-
+            viewFile(innerImgPath);
         });
 
         sdTextPath = Environment.getExternalStorageDirectory() + File.separator + "fish/" + txtName;
         innerTextPath = getFilesDir()+ File.separator + "myfile/" + txtName;
+
+        sdImgPath = Environment.getExternalStorageDirectory() + File.separator + "fish/" + imageName;
+        innerImgPath = getFilesDir()+ File.separator + "myfile/" + imageName;
 
         new Thread(() -> {
             //写入
@@ -122,8 +128,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void writeFile() {
         writeFile(innerTextPath);
-//        writeFile(innerTextImg);
         writeFile(sdTextPath);
+        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.wangyi);
+        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.qq);
+        writeFileFromImg(bitmap1, innerImgPath);
+        writeFileFromImg(bitmap2, sdImgPath);
     }
 
     private void writeFile(String filePath) {
@@ -147,7 +156,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void writeFileFromImg(String filePath) {
+    private void writeFileFromImg(Bitmap bitmap, String filePath) {
+        if (bitmap == null)
+            return;
         File file = new File(filePath);
         if (!file.exists()) {
             try {
@@ -158,8 +169,7 @@ public class MainActivity extends AppCompatActivity {
             }
             try {
                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
-                String content = "content:" + filePath;
-                bufferedOutputStream.write(content.getBytes(), 0, content.getBytes().length);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bufferedOutputStream);
                 bufferedOutputStream.flush();
                 bufferedOutputStream.close();
             } catch (Exception e) {
